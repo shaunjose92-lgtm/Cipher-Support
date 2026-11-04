@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cipher Support</title>
+<meta name="description" content="Get help with Cipher: accounts, chats, calls, groups, notifications and more. Report an issue to the Cipher team.">
+<meta name="theme-color" content="#ece7da" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1f1b16" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><rect width=%2224%22 height=%2224%22 rx=%227%22 fill=%22%237a8a62%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ece7da; --panel:#f6f2e8; --raise:#fbf9f3; --ink:#2b261f; --muted:#6a6352; --line:#d9d1bd;
+  --sage:#7a8a62; --sage-d:#4d5b3a; --sage-s:#dde4cd; --bubble:#4d5b3a; --bubble-ink:#f7f5ee;
+  --warn:#9a5b17; --warn-s:#f1e1c6; --care:#8a3b30; --care-s:#f3dcd6;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#1f1b16; --panel:#27221c; --raise:#2e2821; --ink:#ece6d6; --muted:#a59d89; --line:#3b352b;
+  --sage:#9bb07e; --sage-d:#b9cc9d; --sage-s:#333b27; --bubble:#566a42; --bubble-ink:#f3f1e6;
+  --warn:#e0a458; --warn-s:#3d2f1b; --care:#ec9a8c; --care-s:#43251f;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1f1b16; --panel:#27221c; --raise:#2e2821; --ink:#ece6d6; --muted:#a59d89; --line:#3b352b;
+    --sage:#9bb07e; --sage-d:#b9cc9d; --sage-s:#333b27; --bubble:#566a42; --bubble-ink:#f3f1e6;
+    --warn:#e0a458; --warn-s:#3d2f1b; --care:#ec9a8c; --care-s:#43251f;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--sans);display:flex;flex-direction:column;overflow:hidden;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--sage-d);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* header */
+.top{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:calc(10px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px));border-bottom:1px solid var(--line);background:var(--bg)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
+.brand svg{width:30px;height:30px;flex:none}
+.brand b{font:600 1.25rem/1 var(--serif);letter-spacing:-.01em}
+.brand span{font-size:.95rem;color:var(--muted);padding-left:10px;border-left:1px solid var(--line)}
+.actions{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--raise);font-weight:500;font-size:.92rem;transition:background .15s,border-color .15s,transform .15s var(--ease)}
+.btn:hover{border-color:var(--sage)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--bubble);border-color:var(--bubble);color:var(--bubble-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent}
+.icon-btn{width:40px;padding:0}
+.icon-btn svg{width:18px;height:18px}
+
+/* tabs (mobile) */
+.tabs{display:none;flex:none;padding:8px max(14px,env(safe-area-inset-left,0px));gap:6px;border-bottom:1px solid var(--line);background:var(--bg)}
+.tabs button{flex:1;min-height:42px;border:1px solid transparent;border-radius:12px;background:transparent;font-weight:500;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--panel);border-color:var(--line);color:var(--ink)}
+
+/* desk */
+.desk{flex:1;min-height:0;display:grid;grid-template-columns:310px minmax(0,1fr)}
+.topics{border-right:1px solid var(--line);background:var(--panel);overflow-y:auto;padding:18px 14px 24px;display:flex;flex-direction:column;gap:14px}
+.topics h2{margin:0;font:600 1.05rem/1.2 var(--serif)}
+.search{width:100%;min-height:42px;border:1px solid var(--line);border-radius:12px;background:var(--raise);padding:0 12px}
+.search::placeholder{color:var(--muted)}
+.group{border-top:1px solid var(--line);padding-top:8px}
+.group summary{list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:40px;font-weight:600;font-size:.92rem;cursor:pointer;border-radius:8px;padding:0 6px}
+.group summary::-webkit-details-marker{display:none}
+.group summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s var(--ease);margin-right:4px}
+.group[open] summary::after{transform:rotate(-135deg)}
+.group ul{list-style:none;margin:0 0 6px;padding:0}
+.topic{width:100%;text-align:left;border:0;background:transparent;border-radius:8px;padding:8px 8px;min-height:38px;font-size:.92rem;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--ink)}
+.topic:hover{background:var(--sage-s)}
+.pill{flex:none;font-size:.72rem;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--sage-s);color:var(--sage-d);border:1px solid var(--sage)}
+.never{margin:auto 0 0;font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+.none{font-size:.9rem;color:var(--muted);margin:0}
+
+/* chat */
+.chat{display:flex;flex-direction:column;min-width:0;min-height:0}
+.log{flex:1;min-height:0;overflow-y:auto;padding:28px max(18px,env(safe-area-inset-right,0px)) 12px max(18px,env(safe-area-inset-left,0px));scroll-behavior:smooth}
+.lane{width:100%;max-width:740px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.welcome h1{margin:0 0 10px;font:600 clamp(1.9rem,4.2vw,2.7rem)/1.1 var(--serif);letter-spacing:-.02em;max-width:18ch;text-wrap:balance}
+.welcome p{margin:0 0 18px;max-width:56ch;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--raise);font-size:.92rem;text-align:left;transition:border-color .15s,background .15s}
+.chip:hover{border-color:var(--sage);background:var(--sage-s)}
+.welcome .chip{animation:rise .5s var(--ease) both;animation-delay:calc(var(--i)*70ms + 150ms)}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+.msg{animation:fade .25s ease both}
+.msg.user{align-self:flex-end;max-width:min(85%,520px);background:var(--bubble);color:var(--bubble-ink);padding:9px 14px;border-radius:18px 18px 4px 18px;overflow-wrap:anywhere;white-space:pre-wrap}
+.msg.bot{position:relative;padding-left:16px;display:flex;flex-direction:column;gap:10px;max-width:640px}
+.msg.bot::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:3px;background:var(--sage)}
+.msg.bot.neutral::before{background:repeating-linear-gradient(var(--muted) 0 5px,transparent 5px 9px)}
+.msg.bot.warn::before{background:var(--warn)}
+.msg.bot.care::before{background:var(--care);width:4px}
+.src{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.82rem;color:var(--sage-d);font-weight:600}
+.src svg{width:15px;height:15px;flex:none}
+.src .t{color:var(--muted);font-weight:450}
+.warn .src{color:var(--warn)} .care .src{color:var(--care)} .neutral .src{color:var(--muted)}
+.lead{margin:0;font:500 1.12rem/1.45 var(--serif)}
+.msg.bot p{margin:0}
+.msg.bot ol{margin:0;padding-left:1.3rem;display:flex;flex-direction:column;gap:6px}
+.note{font-size:.92rem;color:var(--muted);margin:0}
+code{font:500 .85em ui-monospace,SFMono-Regular,Menlo,monospace;padding:1px 6px;border-radius:6px;background:var(--sage-s);border:1px solid var(--line)}
+.rel{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.88rem;color:var(--muted)}
+.rel .chip{min-height:34px;font-size:.86rem}
+.fb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.9rem;color:var(--muted)}
+.fb .chip{min-height:34px}
+.lines{display:flex;flex-direction:column;gap:6px}
+.lines .l{padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--raise)}
+.typing{display:flex;gap:5px;padding:6px 0 6px 16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);opacity:.5;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:.9}}
+
+/* composer */
+.composer{flex:none;padding:10px max(18px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));background:linear-gradient(to top,var(--bg) 70%,transparent)}
+.composer .lane{gap:8px}
+.box{display:flex;align-items:flex-end;gap:8px;background:var(--raise);border:1px solid var(--line);border-radius:22px;padding:6px 6px 6px 16px;transition:border-color .15s}
+.box:focus-within{border-color:var(--sage)}
+.box textarea{flex:1;border:0;background:transparent;resize:none;outline:0;min-height:28px;max-height:130px;padding:6px 0;line-height:1.45}
+.send{flex:none;width:42px;height:42px;border-radius:50%;border:0;background:var(--bubble);color:var(--bubble-ink);display:grid;place-items:center;transition:transform .15s var(--ease),opacity .15s}
+.send:disabled{opacity:.4;cursor:default}
+.send:not(:disabled):active{transform:scale(.92)}
+.send svg{width:18px;height:18px}
+.fine{margin:0;text-align:center;font-size:.78rem;color:var(--muted)}
+
+/* report sheet */
+dialog.sheet{border:0;padding:0;margin:0 0 0 auto;height:100dvh;max-height:100dvh;width:min(480px,100%);background:var(--panel);color:var(--ink);box-shadow:-20px 0 50px rgba(0,0,0,.25)}
+dialog.sheet[open]{display:flex;flex-direction:column;animation:slide .3s var(--ease)}
+dialog.sheet::backdrop{background:rgba(25,20,12,.5)}
+@keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet header{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:calc(16px + env(safe-area-inset-top,0px)) 20px 12px;border-bottom:1px solid var(--line)}
+.sheet h2{margin:0;font:600 1.35rem/1.2 var(--serif)}
+.sheet form{flex:1;min-height:0;display:flex;flex-direction:column}
+.sheet .body{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px}
+.sheet .foot{flex:none;padding:12px 20px calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;background:var(--panel)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field>label,.field>.lbl{font-weight:600;font-size:.88rem}
+.field small{color:var(--muted);font-size:.8rem}
+.field input[type=text],.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:var(--raise);padding:10px 12px;min-height:44px}
+.field textarea{min-height:92px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:0;border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-s)}
+.radios{display:flex;flex-wrap:wrap;gap:8px}
+.radios label{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--raise);font-size:.9rem;cursor:pointer}
+.radios input{accent-color:var(--bubble)}
+.radios label:has(input:checked){border-color:var(--sage);background:var(--sage-s)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.9rem}
+.check input{margin-top:4px;accent-color:var(--bubble);width:18px;height:18px}
+details.tech{font-size:.82rem;color:var(--muted);border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--raise)}
+details.tech summary{cursor:pointer;font-weight:500}
+details.tech pre{margin:8px 0 0;white-space:pre-wrap;font:400 .78rem/1.5 ui-monospace,Menlo,monospace}
+.warnbox{font-size:.88rem;border-radius:10px;padding:10px 12px;background:var(--warn-s);color:var(--ink);border:1px solid var(--warn)}
+.status{min-height:1.4em;font-size:.9rem;font-weight:500;color:var(--sage-d);flex-basis:100%}
+.status.err{color:var(--care)}
+
+@media (max-width:860px){
+  .tabs{display:flex}
+  .desk{grid-template-columns:1fr}
+  .topics{border-right:0}
+  body[data-view="ask"] .topics{display:none}
+  body[data-view="topics"] .chat{display:none}
+  .brand span{display:none}
+  .actions .label{display:none}
+  .btn.report-top{width:40px;padding:0}
+  .msg.user{max-width:90%}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* startup scene */
+#splash,#splashUnder{position:fixed;inset:0;z-index:9999;transition:transform 1s cubic-bezier(.76,0,.24,1)}
+#splashUnder{z-index:9998;background:var(--sage-d);transition-delay:.14s}
+#splash{display:grid;place-items:center;overflow:hidden;cursor:pointer;background:var(--bg)}
+#splash::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.055;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+#splash.out,#splashUnder.out{transform:translateY(-100%)}
+.sp-core{position:relative;display:flex;flex-direction:column;align-items:center;padding:24px;text-align:center}
+.sp-mark{width:64px;height:64px;margin-bottom:26px;animation:spMark 1s var(--ease) .1s both}
+.sp-mark svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 14px 18px color-mix(in srgb,var(--sage-d) 22%,transparent))}
+.sp-tile{fill:var(--sage)}
+.sp-draw{fill:none;stroke:#f6f2e8;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;animation:spDraw 1s var(--ease) .45s forwards}
+.sp-word{margin:0;display:flex;overflow:hidden;padding:.06em .04em .22em;margin-bottom:-.12em;font:600 clamp(3rem,11vw,5.2rem)/1.08 var(--serif);letter-spacing:-.025em;color:var(--ink)}
+.sp-word span{display:inline-block;transform:translateY(115%);animation:spRise .95s var(--ease) calc(.8s + var(--i) * .055s) forwards}
+.sp-rule{width:0;height:1px;margin:18px 0 16px;background:var(--sage);animation:spRule .9s var(--ease) 1.55s forwards}
+.sp-sub{margin:0;font:500 .74rem/1 var(--sans);letter-spacing:.5em;text-indent:.5em;text-transform:uppercase;color:var(--muted);opacity:0;animation:spFade 1s ease 1.75s forwards}
+@keyframes spMark{from{opacity:0;transform:translateY(10px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes spDraw{to{stroke-dashoffset:0}}
+@keyframes spRise{to{transform:none}}
+@keyframes spRule{to{width:44px}}
+@keyframes spFade{to{opacity:1}}
+@keyframes spIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+body.enter .top{animation:spIn .9s var(--ease) .35s both}
+body.enter .tabs{animation:spIn .9s var(--ease) .42s both}
+body.enter .desk{animation:spIn 1s var(--ease) .5s both}
+</style>
+</head>
+<body data-view="ask">
+<div id="splashUnder" hidden></div>
+<div id="splash" role="status" aria-label="Cipher Support is loading" hidden>
+  <div class="sp-core">
+    <div class="sp-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="sp-tile" width="24" height="24" rx="7"/><path class="sp-draw" pathLength="100" d="M15.6 8.9A4.6 4.6 0 1 0 15.6 15.1"/></svg></div>
+    <h1 class="sp-word" id="spWord" aria-hidden="true"></h1>
+    <div class="sp-rule"></div>
+    <p class="sp-sub">Support</p>
+  </div>
+</div>
+<script>
+(() => {
+const splash = document.getElementById('splash'), under = document.getElementById('splashUnder');
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) { splash.remove(); under.remove(); return; }
+splash.hidden = under.hidden = false;
+const wEl = document.getElementById('spWord');
+'Cipher'.split('').forEach((ch, i) => { const s = document.createElement('span'); s.textContent = ch; s.style.setProperty('--i', i); wEl.appendChild(s); });
+let closed = false;
+function close() {
+  if (closed) return; closed = true;
+  splash.classList.add('out'); under.classList.add('out'); document.body.classList.add('enter');
+  setTimeout(() => { splash.remove(); under.remove(); document.body.classList.remove('enter'); }, 1700);
+}
+splash.addEventListener('click', close);
+addEventListener('keydown', e => { if (!closed && (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ')) close(); });
+setTimeout(close, 3000);
+})();
+</script>
+<header class="top">
+  <a class="brand" href="#" aria-label="Cipher Support home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="7" fill="#7a8a62"/><path d="M15.6 8.9A4.6 4.6 0 1 0 15.6 15.1" fill="none" stroke="#f6f2e8" stroke-width="2.2" stroke-linecap="round"/></svg>
+    <b>Cipher</b><span>Support</span>
+  </a>
+  <div class="actions">
+    <button class="btn icon-btn ghost" id="themeBtn" type="button" aria-label="Switch between light and dark mode" title="Switch light or dark mode">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/></svg>
+    </button>
+    <button class="btn primary report-top" id="reportTop" type="button" aria-label="Report an issue">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4m0 0h11l-2 4 2 4H5"/></svg>
+      <span class="label">Report an issue</span>
+    </button>
+  </div>
+</header>
+
+<div class="tabs" role="tablist" aria-label="Support sections">
+  <button role="tab" id="tabAsk" aria-selected="true" type="button">Ask</button>
+  <button role="tab" id="tabTopics" aria-selected="false" type="button">Topics</button>
+  <button role="tab" id="tabReport" aria-selected="false" type="button">Report</button>
+</div>
+
+<main class="desk">
+  <aside class="topics" id="topics" aria-label="Help topics">
+    <h2>Browse help topics</h2>
+    <input class="search" id="topicSearch" type="search" placeholder="Search topics" aria-label="Search help topics" autocomplete="off">
+    <div id="topicList"></div>
+    <p class="never">Cipher Support never asks for your password, passphrase, login code or Games ID.</p>
+  </aside>
+
+  <section class="chat" aria-label="Ask Cipher Support">
+    <div class="log" id="log" role="log" aria-live="polite" aria-relevant="additions">
+      <div class="lane" id="lane">
+        <div class="welcome" id="welcome">
+          <h1>What do you need help with in Cipher?</h1>
+          <p>I'm Cipher's AI helper. I work from Cipher's own help library, so what you get is checked, not guessed, but AI can still slip up, so double-check anything important. I can't see your account or messages. If I don't have an answer, you can send a report to the Cipher team.</p>
+          <div class="chips" id="startChips"></div>
+        </div>
+      </div>
+    </div>
+    <form class="composer" id="composer" autocomplete="off">
+      <div class="lane">
+        <div class="box">
+          <label class="sr" for="input">Describe your problem or question about Cipher</label>
+          <textarea id="input" rows="1" maxlength="500" placeholder="Describe what's happening in Cipher"></textarea>
+          <button class="send" id="send" type="submit" aria-label="Send" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </button>
+        </div>
+        <p class="fine">Cipher Support is an AI helper and only answers questions about using Cipher.</p>
+      </div>
+    </form>
+  </section>
+</main>
+
+<dialog class="sheet" id="sheet" aria-labelledby="sheetTitle">
+  <header>
+    <h2 id="sheetTitle">Report an issue</h2>
+    <button class="btn icon-btn ghost" type="button" id="sheetClose" aria-label="Close report form">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </header>
+  <form id="reportForm">
+    <div class="body">
+      <div class="warnbox">Never put your password, passphrase, login code or Games ID in a report.</div>
+      <div class="field">
+        <label for="rCat">What is it about?</label>
+        <select id="rCat" required>
+          <option value="">Choose one</option>
+          <option>Calls and screen sharing</option>
+          <option>Messages, files and voice messages</option>
+          <option>Account and sign-in</option>
+          <option>Groups and channels</option>
+          <option>Notifications and apps</option>
+          <option>Cipher Browser</option>
+          <option>Cipher Music, Games, AI or Dashboard</option>
+          <option>Security concern</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="rWhere">Where are you using Cipher?</label>
+        <select id="rWhere">
+          <option>Computer browser</option>
+          <option>Windows app</option>
+          <option>Phone browser</option>
+          <option>Phone home-screen app</option>
+          <option>Tablet</option>
+          <option>Not sure</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="rWhat">What happened?</label>
+        <textarea id="rWhat" required maxlength="1200" placeholder="Describe what you expected and what you saw instead"></textarea>
+      </div>
+      <div class="field">
+        <label for="rSteps">What did you do just before it happened? <small>(optional)</small></label>
+        <textarea id="rSteps" maxlength="1000" placeholder="For example: I tapped Video call, then…"></textarea>
+      </div>
+      <div class="field">
+        <label for="rMsg">Any message or error on screen? <small>(optional)</small></label>
+        <input id="rMsg" type="text" maxlength="300" placeholder="Copy the words exactly if you can">
+      </div>
+      <div class="field">
+        <span class="lbl" id="freqLbl">How often does it happen?</span>
+        <div class="radios" role="radiogroup" aria-labelledby="freqLbl">
+          <label><input type="radio" name="freq" value="Every time" checked> Every time</label>
+          <label><input type="radio" name="freq" value="Sometimes"> Sometimes</label>
+          <label><input type="radio" name="freq" value="Only once"> Only once</label>
+        </div>
+      </div>
+      <div class="field">
+        <label for="rUser">Your Cipher username <small>(optional, helps us find your account)</small></label>
+        <input id="rUser" type="text" maxlength="60" autocomplete="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <label class="check"><input type="checkbox" id="rChat" checked><span>Include what I asked Cipher Support (my questions and the topics I opened)</span></label>
+      <label class="check"><input type="checkbox" id="rDev" checked><span>Include basic device details</span></label>
+      <details class="tech"><summary>See exactly what gets attached</summary><pre id="devPreview"></pre></details>
+    </div>
+    <div class="foot">
+      <button class="btn primary" type="submit" id="rSend">Send report</button>
+      <button class="btn" type="button" id="rCopy">Copy report</button>
+      <button class="btn ghost" type="button" id="rDownload">Download .txt</button>
+      <div class="status" id="rStatus" role="status" aria-live="polite"></div>
+    </div>
+  </form>
+</dialog>
+
+<noscript><p style="padding:24px">Cipher Support needs JavaScript. Without it, open Cipher and use Settings, or contact the Cipher team directly.</p></noscript>
+
+<script>
+const AREAS = [
+  ['acct', 'Account & sign-in'],
+  ['msg', 'Messaging'],
+  ['call', 'Calls'],
+  ['grp', 'Groups & channels'],
+  ['app', 'Notifications & apps'],
+  ['ext', 'Cipher extras'],
+  ['safe', 'Safety & privacy'],
+  ['fix', 'When something breaks']
+];
+
+const FIXED_NOTE = "Reload Cipher so you're on the latest version. If it still happens after that, report it and I'll fill in the details for you.";
+
+const KB = [
+/* ---------- Account & sign-in ---------- */
+{id:'signup', area:'acct', title:'Create an account',
+ kw:['sign up','signup','register','create account','new account','join cipher','get started','username','display name','finish setup','pick a username'],
+ lead:'You can create a Cipher account in a minute.',
+ steps:['Open Cipher and choose **Sign up**.','Enter a username, display name, email and password, then choose **Create account**.','Open the confirmation email we send you.','If Cipher says "pick a username to finish setting up", add one and choose **Finish setup**.'],
+ note:"Signing up means you agree to Cipher's Terms & Conditions. People can only add you once your account exists.",
+ rel:['verify-email','profile','terms']},
+
+{id:'verify-email', area:'acct', title:"Confirmation email didn't arrive",
+ kw:['verification email','confirm email','confirmation email','confirmation link','no email','email not arriving','resend email','spam folder','junk folder','verify email','didnt get email','email didnt come'],
+ lead:"Confirmation emails can take a few minutes, and they often land in spam.",
+ steps:['Check your spam or junk folder.','Make sure the email address you signed up with is spelled correctly.','On the sign-up screen choose **Resend email**, then wait a few minutes before trying again.'],
+ note:"Still nothing after that? Send a report and include the email provider you use (for example Gmail or a school address).",
+ rel:['signup','login-fail']},
+
+{id:'login-fail', area:'acct', title:"I can't log in",
+ kw:['cant log in','cannot log in','login failed','login not working','wrong password','invalid login','invalid credentials','sign in not working','cant sign in','log in error','login error','wont let me in','keep getting logged out','logged out','keeps logging me out','getting logged out'],
+ lead:"Most login problems come down to a typo or an unconfirmed email.",
+ steps:['Check the email and password for typos and caps lock.','If the account is new, confirm your email first (check spam).','Try again in a different browser or a private window.'],
+ note:"Still locked out? Send a report with your Cipher username. Never include your password.",
+ rel:['forgot-pw','verify-email','browser-blank']},
+
+{id:'forgot-pw', area:'acct', title:'Forgot my password',
+ kw:['forgot password','forgotten password','reset password','change password','lost password','cant remember password','password reset','new password'],
+ lead:"I can't find a self-service password reset in Cipher right now, so I won't promise one exists.",
+ steps:['Try logging in with the exact email you signed up with and any passwords you may have used.','If that fails, send a report in the **Account** category with your Cipher username.'],
+ note:"Cipher Support will never ask for your password, passphrase, login code or Games ID. Don't send them to anyone.",
+ rel:['login-fail','scam']},
+
+{id:'profile', area:'acct', title:'Change your name, status or picture',
+ kw:['display name','change name','status message','profile picture','avatar','upload picture','preset avatars','remove picture','nickname','profile photo','change picture','profile'],
+ lead:'Your profile lives in Settings.',
+ steps:['Open **Settings** (the gear icon).','Edit your display name or status message.','Use **Upload picture** or **Preset avatars** (there is a creator for your own look), or **Remove picture**.','Choose **Save changes**.'],
+ note:'Pictures must be under about 15 MB. A nickname is only visible to you and is set from the other person\'s profile.',
+ rel:['storage','login-fail']},
+
+{id:'logout', area:'acct', title:'Log out',
+ kw:['log out','logout','sign out','switch account','leave account'],
+ lead:'Logging out is in Settings.',
+ steps:['Open **Settings**.','Choose **Log out**.'],
+ note:null, rel:['login-fail','profile']},
+
+{id:'delete-account', area:'acct', title:'Delete your account',
+ kw:['delete account','delete my account','close account','remove my account','deactivate account','erase account','delete everything'],
+ lead:'You can delete your account yourself, but it is permanent.',
+ steps:['Open **Settings**.','Choose the delete account option.','Read the **Delete your account?** warning, then choose **Delete permanently** (or **Keep my account** to cancel).'],
+ note:'Deleting means you lose access to your chats and any keys tied to your account. If you see "Account deletion failed", try again later and report it if it keeps happening.',
+ rel:['passphrase','logout']},
+
+{id:'storage', area:'acct', title:'Storage and the storage meter',
+ kw:['storage','space','quota','storage full','how much space','1.5gb','gb used','storage used','out of space','game saves','storage unavailable','storage meter'],
+ lead:'Every Cipher account gets 1.5 GB, and Settings shows how much you have used.',
+ steps:['Open **Settings** and find the storage meter.','Read the breakdown: messages, file uploads and Cipher Games saves.','To free space, delete large files you sent or clear Cipher Games saves.'],
+ note:'If the meter says "Storage unavailable", wait a moment and open Settings again. Report it if it stays that way.',
+ rel:['attach','games']},
+
+{id:'terms', area:'acct', title:"Terms & Conditions",
+ kw:['terms','conditions','terms and conditions','agree','agreement','updated terms','rules','could not verify the terms'],
+ lead:"You agree to Cipher's Terms & Conditions when you sign up, and Cipher asks again if they change.",
+ steps:['Read the prompt and choose to agree to continue.','If you see "Could not verify the terms agreement", try again after a reload.'],
+ note:'Still stuck on that screen? Send a report.',
+ rel:['signup','login-fail']},
+
+{id:'username', area:'acct', title:'Change your username',
+ kw:['change username','change my username','new username','rename username','username taken','username already taken','different username','edit username'],
+ lead:"You pick a username when you sign up. In Settings you can change your display name and status message, but I can't confirm a way to change the username itself.",
+ steps:['To change how your name looks to others, edit your **Display name** in **Settings**.','For a new username, send a report in the **Account** category and say which one you want.'],
+ note:'"Username taken" at sign-up means someone already uses it. Try another.',
+ rel:['profile','signup']},
+
+{id:'find-settings', area:'acct', title:'Where are Settings?',
+ kw:['where are settings','find settings','settings button','open settings','cant find settings','settings menu','gear icon','where is settings'],
+ lead:'Settings is behind the gear icon.',
+ steps:['On a computer, choose the gear icon in Cipher\'s sidebar.','On a phone, use the **Profile and settings** tab at the bottom.'],
+ note:null, rel:['profile','notifications']},
+
+/* ---------- Messaging ---------- */
+{id:'start-dm', area:'msg', title:'Start a chat with someone',
+ kw:['new dm','start chat','add friend','add user','message someone','find user','search user','user not found','username not found','cant find someone','direct message','start messaging','add a new user'],
+ lead:'Start a direct message from the sidebar.',
+ steps:['Choose the **+** next to Direct messages (**New DM**).','Start typing their username and pick them from the list.','Write your first message.'],
+ note:'The person must already have a Cipher account. "User not found" usually means they have not signed up yet or the username is spelled differently.',
+ rel:['create-channel','block-report']},
+
+{id:'msg-actions', area:'msg', title:'Edit, delete, reply or forward a message',
+ kw:['edit message','delete message','unsend','reply','forward','copy text','react','reaction','emoji reaction','star message','delete for everyone','delete for me','fix typo','message options','not set up yet'],
+ lead:'Every message has a small action bar.',
+ steps:['Hover over the message (on a phone, press and hold it).','Choose **React**, **Star**, **Reply**, **Copy text**, **Forward**, **Edit**, **Delete for me** or **Delete for everyone**.','When editing, press `Enter` to save or `Esc` to cancel.'],
+ note:'If reactions or starring say "not set up yet", that is a problem on our side. Please report it.',
+ rel:['pins','search-msg']},
+
+{id:'pins', area:'msg', title:'Pinned and starred messages',
+ kw:['pin','pinned','unpin','pinned messages','starred','starred messages','save message','bookmark message'],
+ lead:'Pins are shared with the chat, stars are just for you.',
+ steps:['Use a message\'s action bar to pin or star it.','Open **Pinned messages** from the chat\'s top bar to see pins.','Open **Starred messages** from the sidebar header to see yours.'],
+ note:null, rel:['msg-actions','search-msg']},
+
+{id:'send-fail', area:'fix', title:"Message won't send",
+ kw:['message not sending','failed to send','servers down','stuck sending','cant send','not delivered','wont send','message failed','not sending','send button not working','our servers seem to be down'],
+ lead:'"Failed to send" means Cipher could not reach its server at that moment.',
+ steps:['Check that your internet works on another site.','If a banner says Cipher can\'t reach its server, wait a few minutes and choose **Try connecting again**.','Send the message again once the banner is gone.'],
+ note:'If your internet is fine and it keeps failing for more than a few minutes, report it with the time it happened.',
+ rel:['server-down','browser-blank']},
+
+{id:'attach', area:'msg', title:'Send photos, videos and files',
+ kw:['upload','attachment','attach file','photo','video','file too large','upload failed','image too large','upload quality','compress','send file','drag and drop','paperclip','send picture','file upload','too large','max size','couldnt compress'],
+ lead:'Use the paperclip, or drag files into the chat.',
+ steps:['Choose the paperclip (**Attach file**) or drop files onto the chat.','Pick **Compressed** or **Original quality** if Cipher asks, or set a default in **Settings**.','Add a caption if you like and choose **Send**.'],
+ note:'Photos have size limits (roughly 12 to 15 MB). If a video can\'t be compressed Cipher sends the original. For "Upload failed", check your connection and your storage meter, then try again.',
+ rel:['storage','voice-msg']},
+
+{id:'voice-msg', area:'msg', title:'Voice messages',
+ kw:['voice message','record','hold to record','voice note','audio message','5 minutes','microphone access denied','record voice'],
+ lead:'Hold the microphone button to record, release to send.',
+ steps:['Press and hold the microphone button in the message bar.','Release to send (messages are capped at 5 minutes).','If asked, allow microphone access.'],
+ note:'"Microphone access denied" means the browser is blocking it. Allow the microphone for Cipher in your browser\'s site settings, then reload.',
+ rel:['call-perms','attach']},
+
+{id:'search-msg', area:'msg', title:'Find an old message',
+ kw:['search messages','find message','search chat','search in channel','jump to','look for message','find old message','search conversation'],
+ lead:'Cipher has two ways to search.',
+ steps:['Type in the **Search / jump to…** box to jump to a person or channel.','Use **Search messages** to filter by text, by person, and by scope (**This conversation** or **Everywhere**).'],
+ note:null, rel:['pins','msg-actions']},
+
+{id:'mute-chat', area:'msg', title:'Mute a chat',
+ kw:['mute chat','mute conversation','mute group','silence chat','mute a chat','unmute','mute dm','quiet a chat'],
+ lead:'Mute a chat from its top bar.',
+ steps:['Open the chat and choose **Mute** in the top bar.','Choose it again to unmute.'],
+ note:'During a call, the microphone button also says mute, but that only silences your mic.',
+ rel:['notifications','call-perms']},
+
+{id:'disappearing', area:'msg', title:'Disappearing messages',
+ kw:['disappearing','auto delete','vanish','timer','ephemeral','messages disappear','self destruct','could not update disappearing'],
+ lead:'Disappearing messages are a per-chat setting.',
+ steps:['Open the chat\'s **⋯** menu.','Choose **Disappearing messages** and pick how long messages should last.'],
+ note:'"Could not update disappearing messages" means the change did not save. Try again, then report it if it repeats.',
+ rel:['msg-actions','group-admin']},
+
+{id:'chat-bg', area:'msg', title:'Chat backgrounds and speech bubbles',
+ kw:['chat background','wallpaper','background not saving','custom background','speech bubbles','cant read text','hard to read','change background','background wont save','could not save background'],
+ lead:'Each chat can have its own background.',
+ steps:['Open the chat and choose **Chat background** in the top bar.','Pick a preset or upload your own image.','If text is hard to read on a custom image, turn on **Speech bubbles** in **Settings**.'],
+ note:'In groups, a background change is for everyone and needs permission. If it will not save, report it.',
+ rel:['profile','group-admin']},
+
+/* ---------- Calls ---------- */
+{id:'call-start', area:'call', title:'Start a voice or video call',
+ kw:['call','voice call','video call','phone','ring','how to call','start a call','make a call','accept call','decline call','hang up','no answer','on another call','video only available'],
+ lead:'Calls start from inside a chat.',
+ steps:['Open the chat with the person.','Choose **Voice call** or **Video call** in the top bar.','They get an accept or decline popup. During the call use mute, camera, **Share your screen** and hang up.'],
+ note:'A voice call can\'t switch to video; start a video call instead. "No answer" and "is on another call" mean the other person didn\'t pick up or is busy.',
+ rel:['call-network','call-perms','group-call']},
+
+{id:'call-stuck', area:'fix', fixed:true, title:'Call stuck on "Calling…"',
+ kw:['stuck calling','calling forever','never connects','call not ringing','call wont connect','private call channel','could not open the private call channel','call channel error','stuck on calling','calling forever','call wont start'],
+ lead:'That was a bug on our side, and a fix has been released.',
+ steps:[], note:FIXED_NOTE, rel:['call-network','group-call-bug']},
+
+{id:'call-network', area:'fix', title:'Call failed to connect or keeps dropping',
+ kw:['call failed to connect','call dropped','connection lost','network blocking','school wifi','choppy','call keeps dropping','lag','laggy','bad connection','call cuts out','poor quality','call disconnects'],
+ lead:'This usually means the network is blocking or interrupting call traffic.',
+ steps:['Switch between Wi-Fi and mobile data and try again.','Try a different network if you can. School and public networks often restrict calls.','Close other apps using the camera or lots of bandwidth, then start the call again.'],
+ note:'If calls fail on several different networks, report it and include which networks you tried.',
+ rel:['call-stuck','call-perms']},
+
+{id:'call-perms', area:'call', title:'Microphone or camera not working',
+ kw:['mic not working','cant hear','no sound','camera not working','permission denied','microphone access denied','camera blocked','others cant hear me','mute','camera is not supported','not supported in this browser','permissions','microphone','camera','cant see me'],
+ lead:'Almost always a browser or device permission.',
+ steps:['Open **Settings** and run the permissions checkup (notifications, microphone, camera).','Allow Cipher in your browser\'s site settings (the icon next to the address bar), then reload.','Check your device has the right microphone or camera selected.'],
+ note:'"Not supported in this browser" means switching to an up-to-date Chrome, Edge, Safari or Firefox.',
+ rel:['call-network','voice-msg']},
+
+{id:'group-call', area:'call', title:'Group calls and screen sharing',
+ kw:['group call','screen share','share screen','present','fullscreen','pop out','stream volume','participants','share my screen','screen sharing','share audio','focus a stream','sharing without audio'],
+ lead:'Group calls work in group chats, and several people can share their screen.',
+ steps:['In a group chat choose the group voice or video call button to start or join.','Once connected, choose **Share your screen** and pick a window or screen.','Double-click a shared stream to focus it, or use fullscreen, pop-out and the per-stream volume.'],
+ note:'"Sharing without audio" is normal for some sources and browsers. If sharing says permission was denied, the picker was closed or blocked.',
+ rel:['group-call-bug','call-perms']},
+
+{id:'group-call-bug', area:'fix', fixed:true, title:"Group call won't join, or I can't see or hear people",
+ kw:['could not join the group call','group call 403','cant join group call','cant see each other in group call','no audio in group call','group call layout','group call wont join','group call not working','joiner cant hear','group call crammed','faces off screen'],
+ lead:'That was a bug on our side, and a fix has been released.',
+ steps:[], note:FIXED_NOTE, rel:['group-call','call-stuck']},
+
+/* ---------- Groups & channels ---------- */
+{id:'create-channel', area:'grp', title:'Create a group channel',
+ kw:['create channel','new channel','make group','new group','group chat','add members','private channel','public channel','start a group','make a channel','create group'],
+ lead:'Channels are created from the sidebar.',
+ steps:['Choose the **+** next to Channels (**New channel**).','Enter a name and, if you like, a topic.','Choose **Private (invite only)** or **Public (discoverable)**.','Add members, then choose **Create channel**.'],
+ note:'You can add up to 10 members while creating a channel. Use **Invite people** to add more afterwards.',
+ rel:['join-channel','group-admin']},
+
+{id:'join-channel', area:'grp', title:'Join, leave or find channels',
+ kw:['join channel','public channels','browse channels','leave group','invite link','invited','removed from group','accept invite','decline invite','invite no longer available','find groups','discover channels','left the group'],
+ lead:'Public channels can be browsed, private ones need an invite.',
+ steps:['Choose **Browse public channels** to find and join one.','Answer an invite from the popup or notification.','To leave, use the group\'s menu.'],
+ note:'"That invite is no longer available" means it was withdrawn or has expired. Ask the group for a new one. "You were removed from that group" means an admin removed you.',
+ rel:['create-channel','group-admin']},
+
+{id:'group-admin', area:'grp', title:'Manage a group',
+ kw:['admin','permissions','customise group','customize group','group name','group picture','members','remove member','slow mode','announcement','only admins can post','roles','edit group','group settings','group photo','change group name'],
+ lead:'Group controls live under **Customise group**.',
+ steps:['Open the group and choose **Customise group**.','Owners and admins see the full controls. Members see simple options.','Edit the name and picture, view **Members**, or turn on slow mode. Announcement-only groups let only admins post.'],
+ note:'If a control is missing, you probably lack that permission. Ask the group owner or an admin. "Slow mode is on" means you must wait before sending again.',
+ rel:['polls-events','disappearing']},
+
+{id:'polls-events', area:'grp', title:'Polls and events',
+ kw:['poll','vote','event','calendar','rsvp','create poll','schedule event','polls and events','pick a date and time','poll needs at least 2 options'],
+ lead:'Groups can run polls and plan events.',
+ steps:['Open the group\'s actions and choose **Poll** or **Event**.','For a poll, add a question and at least 2 options.','For an event, add a title and a date and time (place and notes are optional).'],
+ note:'If polls and events won\'t load, reload and try again, then report it.',
+ rel:['group-admin','pins']},
+
+{id:'focus-room', area:'grp', title:'Focus rooms',
+ kw:['focus room','study together','pomodoro','deep work','focus timer','ambient sound','focus session','homework room','start a focus room'],
+ lead:'Focus rooms let you work alongside friends on a timer.',
+ steps:['Choose **Focus room** in a chat\'s top bar, or open **Focus rooms** in Settings.','Say what you\'re working on (for example deep work, reading or homework) and pick a length.','Use **Ambient sound** if you want background audio.'],
+ note:null, rel:['music','notifications']},
+
+/* ---------- Notifications & apps ---------- */
+{id:'notifications', area:'app', title:'Turn on notifications',
+ kw:['notifications','not getting notifications','alerts','notifications off','notifications blocked','popup','do not disturb','notification sound','silent','no notifications','enable notifications','stop notifications','turn off notifications','disable notifications','too many notifications','notification not working','dnd'],
+ lead:'Notifications need to be switched on in Cipher and allowed by your browser.',
+ steps:['Open **Settings** and turn on **Desktop notifications**, then allow them when asked.','If Cipher says they are blocked, open your browser\'s site settings (icon next to the address bar), set Notifications to Allow, and reload.','Make sure **Do Not Disturb** is off and **Notification sound** is on.'],
+ note:'On a phone, also allow notifications for your browser or the Cipher home-screen app in the phone\'s own settings.',
+ rel:['windows-app','install-app']},
+
+{id:'windows-app', area:'app', title:'Cipher for Windows',
+ kw:['windows app','desktop app','download','install','setup exe','auto start','background','bottom right','windows','pc app','cipher desktop','download cipher'],
+ lead:'The Windows app keeps Cipher running in the background.',
+ steps:['Choose **Download Cipher for Windows** in the sidebar and check your Downloads folder.','Run the installer and sign in.','From then on it starts with Windows and shows message and call popups at the bottom-right of your screen.'],
+ note:'Install the newest version whenever one is offered.',
+ rel:['desktop-popups','notifications']},
+
+{id:'desktop-popups', area:'fix', fixed:true, title:'Windows app shows no popups',
+ kw:['no popups windows app','call popup not showing','desktop notifications not showing','not showing in background','windows app not notifying','no message popup','accept decline popup missing','popups not appearing'],
+ lead:'That was a bug in the Windows app, and a fix has been released.',
+ steps:[], note:'Make sure you are on the latest version of Cipher for Windows. If it still happens, report it and I\'ll fill in the details for you.', rel:['windows-app','notifications']},
+
+{id:'install-app', area:'app', title:'Add Cipher to your home screen',
+ kw:['add to home screen','install app','web app','pwa','phone app','full screen','ios','android','iphone','install on phone','cipher on phone','works best as a web app'],
+ lead:'Cipher works best as a web app on your phone.',
+ steps:['Open Cipher in your phone\'s browser.','iPhone (Safari): tap Share, then **Add to Home Screen**.','Android (Chrome): open the menu and choose **Install app** or **Add to Home screen**.'],
+ note:null, rel:['notifications','windows-app']},
+
+{id:'browser-blank', area:'fix', title:'Cipher won\'t load or shows a blank screen',
+ kw:['wont load','blank screen','white screen','loading forever','crash','unsupported browser','old browser','safari','firefox','chrome','edge','slow','freezing','frozen','stuck loading','black screen','page not loading','app crashes','crashes when i open','crashes on open'],
+ lead:'A fresh reload fixes most loading problems.',
+ steps:['Reload the page completely (`Ctrl`+`F5`, or `Cmd`+`Shift`+`R` on a Mac).','Update your browser or try another one (Chrome, Edge, Safari or Firefox).','Try a normal window instead of a private one, and pause extensions that block scripts.','Restart your device if it still hangs.'],
+ note:'Still broken? Send a report with your device and browser.',
+ rel:['server-down','login-fail']},
+
+{id:'server-down', area:'fix', title:"Cipher can't reach its server",
+ kw:['server down','outage','cant reach server','try connecting again','banner','offline','nothing loads','cipher is down','is cipher down','server provider','connection interruption'],
+ lead:'The banner means Cipher can\'t reach its server right now, so some features may not work.',
+ steps:['Check that other websites load, to rule out your own internet.','Wait a few minutes, then choose **Try connecting again**.'],
+ note:'If your internet is fine and the banner stays for a long time, send a report with the time it started.',
+ rel:['send-fail','browser-blank']},
+
+{id:'devices', area:'app', title:'Which devices and browsers work?',
+ kw:['ipad','tablet','mac','macbook','chromebook','linux','android','iphone','what devices','which browsers','supported browsers','works on','use cipher on','can i use cipher','compatible','laptop'],
+ lead:'Cipher runs in an up-to-date browser on phones, tablets and computers.',
+ steps:['Use a current Chrome, Edge, Safari or Firefox.','On Windows you can also install the Cipher app.','On a phone or tablet, add Cipher to your home screen for the best experience.'],
+ note:'Very old browsers may not support calls, camera or notifications.',
+ rel:['install-app','windows-app','browser-blank']},
+
+{id:'theme', area:'app', title:'Light and dark mode',
+ kw:['dark mode','light mode','theme','colors','too bright','night mode','change theme'],
+ lead:'Switch themes with the theme button.',
+ steps:['Use the **Toggle theme** button in the top bar to switch between light and dark.'],
+ note:null, rel:['chat-bg']},
+
+/* ---------- Cipher extras ---------- */
+{id:'cipher-ai', area:'ext', title:'Cipher AI in your chats',
+ kw:['cipher ai','ai assistant','summarize','summarise','ask ai','ai not responding','hit a snag','model busy','chatgpt','chat ai','/ai','nothing to summarize','slash ai'],
+ lead:'Cipher AI is the assistant built into your chats.',
+ steps:['In the message box type `/ai` followed by your question.','Ask it to summarise a conversation when you want a recap.'],
+ note:'If a message says one model was busy so another answered, that is normal. "Cipher AI hit a snag" means try again in a moment. Cipher AI can be wrong, and it is separate from me: I only help with using Cipher.',
+ rel:['send-fail','server-down']},
+
+{id:'music', area:'ext', title:'Cipher Music',
+ kw:['music','songs','playlist','library','jamendo','player','spotify','apple music','cant play song','preview','volume','your library','save song','search songs','shuffle','full song unavailable','tap play','song wont load'],
+ lead:'Cipher Music is a free player built into Cipher.',
+ steps:['Open it from the Dashboard banner or Cipher Apps.','Search for songs and save the ones you like to **Your Library**.','Use the player at the bottom, or minimise it to return to the Dashboard.'],
+ note:'"Full song unavailable" means that track only plays a preview. "Tap play to start the song" is your browser requiring a tap. Apple Music and Spotify are marked "coming soon".',
+ rel:['dashboard','focus-room']},
+
+{id:'games', area:'ext', title:'Cipher Games sign-in',
+ kw:['cipher games','games login','login id','licence expired','license expired','games id','game saves','dont know your id','new games id','your licence was expired','games not letting me in'],
+ lead:'Cipher Games signs you in with a 6-character Games Login ID from Cipher.',
+ steps:['Open **Settings** in Cipher and copy your **Cipher Games Login ID**.','Enter it on Cipher Games. Use **Don\'t know your ID?** to jump back to Cipher.','If you made a new ID, the old one stops working straight away. Use the new one.'],
+ note:'Cipher Games is only for Cipher Message users. "Your licence was expired!" means the ID you used is old. Never share your ID.',
+ rel:['storage','scam']},
+
+{id:'browser-code', area:'ext', title:'Cipher Browser Login Code',
+ kw:['cipher browser','browser code','login code','browser profile','saved browser data','new code','rotate code','browser login code','copy browser code','delete browser data','browser password'],
+ lead:'The Cipher Browser Login Code identifies your browser profile, so there is no separate browser password.',
+ steps:['Open **Settings** in Cipher and find **Cipher Browser Login Code**.','Copy it when you need it.','Making a new code deletes your previous saved browser profile.'],
+ note:'Keep the code private.',
+ rel:['browser-social','scam']},
+
+{id:'browser-social', area:'fix', title:'Signing in to social media in Cipher Browser',
+ kw:['instagram','snapchat','tiktok','social media login','keeps asking verification','verification loop','stuck loading after verification','not remembering login','cookies','stay logged in','youtube search','wikipedia','site wont load','cant sign in to instagram','sign in to instagram','sign in to tiktok','sign in to snapchat','log in to instagram','log in to tiktok','log in to snapchat','login not saved','keeps logging me out','verification again','cipher browser login'],
+ lead:'We know signing in to social apps like Instagram, Snapchat and TikTok can be unreliable in Cipher Browser: repeated verification, getting stuck loading afterwards, or not staying signed in.',
+ steps:['Restart the tab with the restart button (`Ctrl`+`R`) and try once more.','Use the official app for that site in the meantime.','Send a report naming the site, the step where it fails and any message you see.'],
+ note:'Your details help us fix this. Never include your password in a report.',
+ rel:['browser-code','browser-blank']},
+
+{id:'creators', area:'ext', title:'Check on your creators (YouTube)',
+ kw:['creators','youtube','add creator','remove creator','videos','video wont play','youtube channel','15 creators','video player','could not play this video','creator row','mini youtube'],
+ lead:'The creators row on your Dashboard shows new videos from channels you follow.',
+ steps:['On the Dashboard find **Check on your creators!** and add a channel using its `youtube.com/@name` address.','You can follow up to 15 creators. Remove one with its **×**.','Select a video to watch it in the pop-up player, which you can minimise while you chat.'],
+ note:'If "Could not play this video" appears, use **Open on YouTube**.',
+ rel:['dashboard','music']},
+
+{id:'dashboard', area:'ext', title:'Dashboard, friends\' updates and weather',
+ kw:['dashboard','weather','location','celsius','fahrenheit','city','friends updates','status update','what are your friends up to','no updates','back to dashboard','whats happening today','temperature','my dashboard'],
+ lead:'Your Dashboard is the home screen when no chat is open.',
+ steps:['**What are your friends up to?** shows status updates from your contacts. Post your own with **Add status update**; it is visible to your contacts for 24 hours.','**What\'s the weather?** needs a city or your location. Use the switch to change °C and °F.','From a chat use **Back to Dashboard** (on phones, the bottom Dashboard tab).'],
+ note:null, rel:['creators','music']},
+
+/* ---------- Safety & privacy ---------- */
+{id:'block-report', area:'safe', title:'Block or report someone',
+ kw:['block','unblock','report user','harassment','bullying','bully','annoying','spam','stranger','remove friend','unwanted messages','threatening','abuse','being harassed','someone is bothering me','keeps messaging me','messaging me','wont leave me alone','harassing me','creep','report someone','mean to me','blocked users'],
+ lead:'You can block, remove or report someone yourself.',
+ steps:['Open their profile with **Show user profile**.','Choose **Block** or **Remove friend**.','To report them, choose **Report** and briefly describe what happened.','To undo a block, open **Settings** and use **Blocked users**.'],
+ note:'If someone threatens you or you feel unsafe, tell a trusted adult or a teacher straight away.',
+ rel:['privacy','scam']},
+
+{id:'privacy', area:'safe', title:'What others can see',
+ kw:['who can see','privacy','private','visible','status visible','presence','online status','do not disturb','read my messages','can staff see','who sees my','is it private','who can read'],
+ lead:'You control a few things others can see.',
+ steps:['Status updates are visible to your contacts for 24 hours.','Set your presence or **Do Not Disturb** in **Settings**.','Your nickname for someone is only visible to you.'],
+ note:'I can\'t see your messages or account details, so I can\'t look anything up for you.',
+ rel:['block-report','passphrase']},
+
+{id:'passphrase', area:'safe', title:'Passphrase and locked messages',
+ kw:['passphrase','locked messages','lock my messages','encryption','forgot passphrase','unlock','cant read messages','no longer readable','encryption key','encrypted','enter passphrase','i forgot it','earlier passphrase','messages locked','set a new passphrase','locked'],
+ lead:'If Cipher asks for a passphrase, it unlocks messages that were locked with it. Nobody, including me and Cipher, can recover a forgotten passphrase.',
+ steps:['Type the passphrase exactly in the unlock box. A different browser or device asks again.','If you forgot it, choose **I forgot it**, then **Set a new passphrase**. New messages will work; messages locked with the old one stay unreadable.','If you remember an earlier passphrase, Settings lets you unlock that earlier key.'],
+ note:'"Sent before encryption was removed" messages and files can\'t be opened again. Never send your passphrase to anyone.',
+ rel:['scam','delete-account']},
+
+{id:'scam', area:'safe', title:'Account hacked or suspicious messages',
+ kw:['scam','phishing','hacked','account hacked','someone logged in','suspicious','compromised','stolen account','fake support','asked for my password','someone has my account','not me','im being scammed','someone knows my password','my account was taken'],
+ lead:'Cipher Support will never ask for your password, passphrase, login code or Games ID. Anyone who does is not us.',
+ steps:['Don\'t share any codes or passwords, and don\'t click links from people you don\'t trust.','In **Settings**, make new Cipher Games and Cipher Browser codes so the old ones stop working.','Send a report in the **Security** category straight away, and tell a trusted adult.'],
+ note:null, rel:['block-report','passphrase']}
+];
+
+/* ---------- Cipher Support engine: grounded answers only ---------- */
+const STOP = new Set(('a an the is are was were be been am to of in on at for with and or but my me i you your yours it its this that these those do does did can could would should will how what why when where which who whom please help need want get got have has had just really very so if then there their them they we us our im ive id thats whats hi hey cipher ok okay like some any about into out up down again more also too ago').split(' '));
+
+function norm(s) {
+  return String(s).toLowerCase().replace(/[\u2018\u2019`]/g, "'").replace(/'/g, '').replace(/[^a-z0-9/+.]+/g, ' ').replace(/\.(?=\s|$)/g, ' ').trim();
+}
+function stem1(w) {
+  if (w.length <= 3) return w;
+  if (w.endsWith('ies') && w.length > 4) w = w.slice(0, -3) + 'y';
+  else if (w.endsWith('ing') && w.length > 5) w = w.slice(0, -3);
+  else if (w.endsWith('ed') && w.length > 4) w = w.slice(0, -2);
+  else if (/[^su]s$/.test(w) && !w.endsWith('ss')) w = w.slice(0, -1);
+  if (w.length > 3 && w.endsWith('e')) w = w.slice(0, -1);
+  return w;
+}
+function stem(w) { for (let i = 0; i < 3; i++) { const n = stem1(w); if (n === w) break; w = n; } return w; }
+function toks(s) {
+  return norm(s).split(' ').filter(Boolean).map(stem).filter(w => w && !STOP.has(w));
+}
+function allToks(s) { return norm(s).split(' ').filter(Boolean).map(stem); }
+
+/* index */
+const DF = new Map();
+const IDX = KB.map(e => {
+  const phrases = e.kw.map(k => allToks(k).filter(w => !STOP.has(w)));
+  const set = new Set();
+  phrases.forEach(p => p.forEach(t => set.add(t)));
+  toks(e.title).forEach(t => set.add(t));
+  set.forEach(t => DF.set(t, (DF.get(t) || 0) + 1));
+  const titleTokens = new Set(toks(e.title));
+  return { e, phrases, set, titleTokens };
+});
+const N = KB.length;
+const idf = t => Math.log(1 + N / (DF.get(t) || 1));
+
+function score(ix, qt) {
+  const joined = ' ' + qt.join(' ') + ' ';
+  let s = 0;
+  const seen = new Set();
+  for (const t of qt) {
+    if (seen.has(t)) continue; seen.add(t);
+    if (ix.set.has(t)) s += idf(t) * (ix.titleTokens.has(t) ? 1.25 : 1);
+  }
+  for (const p of ix.phrases) {
+    if (p.length >= 2 && joined.includes(' ' + p.join(' ') + ' ')) s += 2 + p.length * 1.5;
+    else if (p.length === 1 && seen.has(p[0]) && qt.length <= 2) s += 1.5;
+  }
+  return s;
+}
+
+/* words that prove a message is about Cipher */
+const DOMAIN = new Set(('cipher app account login log sign signup password passphrase message chat dm call video voice group channel member notification notif setting profile status file photo picture upload download storage browser music song game games ai dashboard friend block report encryption encrypt email username install windows phone screen share mic microphone camera sound error bug crash load slow server update invite link poll event pin star react reply forward edit delete theme dark mode avatar nickname verify confirm email spam popup banner banner offline wifi permission focus room creator youtube instagram snapchat tiktok weather playlist library licence license /ai lag laggy glitch glitchy logged gif sticker emoji button tab ipad tablet mac chromebook laptop terms hack hacked scam bully harass stuck freeze frozen fail failed broken working').split(' ').map(w => stem(w)));
+const domainHits = qt => qt.filter(t => DOMAIN.has(t)).length;
+
+/* guardrails */
+const RX = {
+  crisis: /\b(kill myself|killing myself|suicid\w*|end my life|want to die|wanna die|self[- ]?harm|hurt myself|harm myself|cut myself|dont want to (be here|live|exist)|better off dead|no reason to live)\b/,
+  inject: /(ignore|disregard|forget|override|bypass).{0,30}(instruction|rule|prompt|guideline|restriction|polic)|system prompt|your (prompt|instructions|rules)|reveal.{0,20}(prompt|instruction)|jailbreak|developer mode|\bdan mode\b|pretend (you are|youre|to be)|act as (a|an|if|my)|role ?play|you are now|from now on you|new persona/,
+  access: /\b(hack(ing)? (into|someone|somebody|an?|their|his|her|the|cipher)|crack (a|an|the|his|her|their|someone)|steal|spy on|brute ?force|ddos|keylog|phish(ing)? (someone|them|him|her)|bypass (the )?(security|login|ban|block|filter))|(read|spy|view|access|get into|look at|see).{0,25}(someone elses|somebody elses|other peoples|another (person|user)s|a strangers|my (ex|girlfriend|boyfriend|gf|bf)s?).{0,20}(messages?|dms?|chats?|password|account|location)/,
+  greet: /^(hi|hello|hey|yo|sup|howdy|hiya|good (morning|afternoon|evening|day))\b.{0,20}$/,
+  thanks: /^(thanks|thank you|thx|ty|cheers|ta|cool thanks|great thanks)\b.{0,25}$/,
+  bye: /^(bye|goodbye|cya|see ya|see you|later)\b.{0,15}$/,
+  ack: /^(lol|haha|ok|okay|k|yes|yeah|yep|no|nope|hmm|hm|cool|nice|great|good)\W*$/,
+  vague: /^(help|help me|i need help|can you help( me)?|i have a (problem|question|issue)|problem|issue|question|support)\W*$/,
+  who: /(who|what) (are|r) (you|u)|are (you|u) (an? )?(ai|bot|robot|human|real|person|chatgpt|cipher ai)|what (can|do) you (do|help)|what are you (for|good)|how do you work/,
+  human: /(talk|speak|chat|connect|get|reach) (to|with) (a |an |the )?(human|person|agent|someone|staff|team|owner|admin|developer|support team|real person)|live (agent|chat|support)|contact (support|you|us|cipher|the team|the owner|the developer)|email (support|you|cipher|the team)|customer service|human support/,
+  bugRep: /(report|submit|file|log|raise|send).{0,15}(bug|issue|problem|glitch|error|feedback)|found a bug|theres a bug|bug report|feature request|suggestion|i have (a )?(feedback|suggestion|idea)/,
+  userRep: /\b(user|person|someone|bully|harass|abus|him|her|them|stranger|spammer)\w*/,
+  fail: /(still|didnt|doesnt|does not|did not|wont|not) (work|help|fix|solve|working|happening)|same (problem|issue|error)|thats not (it|helpful|right|what)|no luck|nothing (works|helped)|still (broken|stuck|failing)|that didnt/,
+  off: /\b(recipe|bake|baking|cake|pizza|rice|food|restaurant|dinner|lunch|cook|homework|essay|poem|joke|riddle|story|lyric|horoscope|stock price|bitcoin|capital of|president|prime minister|translate|equation|calculate|math|python|java|javascript code|write (me )?(a|an|some)|tell me about|movie|recommend (a )?(movie|song|show|book)|diet|workout|medical|diagnos|lawyer|football|soccer|basketball|cricket|tennis|nfl|nba|afl|who won|celebrity|trivia|physics|chemistry|history of|forecast|wi fi password|wifi password|weather (in|for) (?!my |the dashboard)|what is \d)\b/
+};
+
+/* decision thresholds (tuned against test set) */
+const T = { MIN: 3.2, GAP: 1.2, STRONG: 9, ASK: 2.2, OFF_STRONG: 7 };
+
+function respond(raw, ctx) {
+  const text = String(raw || '').slice(0, 500).trim();
+  const n = norm(text);
+  if (!n) return { kind: 'empty' };
+
+  if (RX.crisis.test(n)) return { kind: 'crisis' };
+  if (RX.inject.test(n)) return { kind: 'guard', why: 'role' };
+  if (RX.access.test(n)) return { kind: 'guard', why: 'access' };
+  if (RX.greet.test(n)) return { kind: 'greet' };
+  if (RX.thanks.test(n)) return { kind: 'thanks' };
+  if (RX.ack.test(n)) return { kind: 'ack' };
+  if (RX.vague.test(n)) return { kind: 'vague' };
+  if (RX.bye.test(n)) return { kind: 'bye' };
+  if (RX.who.test(n)) return { kind: 'who' };
+  if (RX.human.test(n)) return { kind: 'human' };
+  if (RX.bugRep.test(n) && !RX.userRep.test(n)) return { kind: 'report-offer' };
+  if (ctx && ctx.last && RX.fail.test(n)) return { kind: 'escalate', entry: ctx.last };
+
+  const qt = toks(n);
+  const ranked = IDX.map(ix => ({ e: ix.e, s: score(ix, qt) })).sort((a, b) => b.s - a.s);
+  const [top, second] = ranked;
+  const dh = domainHits(qt) + (/\bcipher\b/.test(n) ? 1 : 0);
+
+  if (RX.off.test(n) && (top.s < T.MIN || (dh <= 1 && top.s < T.STRONG))) return { kind: 'off' };
+
+  if (top.s >= T.MIN && (dh > 0 || top.s >= T.OFF_STRONG)) {
+    if (top.s >= T.STRONG || top.s - second.s >= T.GAP) return { kind: 'answer', entry: top.e, score: top.s };
+    const options = ranked.filter(r => r.s >= top.s - 1.5).slice(0, 3).map(r => r.e);
+    return { kind: 'choose', options };
+  }
+  if (dh === 0) return { kind: 'off' };
+  const near = ranked.filter(r => r.s >= T.ASK).slice(0, 3).map(r => r.e);
+  return { kind: 'unknown', near };
+}
+
+
+
+</script>
+<script>
+(() => {
+'use strict';
+
+/* ---------- Setup: connect reports to the Cipher team here ---------- */
+const CONFIG = {
+  reportEndpoint: 'https://cvnbsgfruntizatfmhah.supabase.co/functions/v1/submit-support-report', // Supabase function: saves the report and emails it to the Cipher team
+  aiEndpoint: 'https://cvnbsgfruntizatfmhah.supabase.co/functions/v1/cipher-support-ai', // Supabase function that runs Gemini (the API key lives there, never in this page)
+  reportEmail: ''
+};
+
+const $ = (s, r = document) => r.querySelector(s);
+const byId = id => KB.find(e => e.id === id);
+const areaName = a => (AREAS.find(x => x[0] === a) || [, ''])[1];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const state = { last: null, transcript: [], busy: false, lastQuestion: '', history: [] };
+const log = $('#log'), lane = $('#lane');
+
+/* ---------- tiny DOM helpers (all text goes through textContent) ---------- */
+function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+function rich(parent, str) {
+  str.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).forEach(part => {
+    if (!part) return;
+    if (part.startsWith('**')) parent.appendChild(el('strong', null, part.slice(2, -2)));
+    else if (part.startsWith('`')) parent.appendChild(el('code', null, part.slice(1, -1)));
+    else parent.appendChild(document.createTextNode(part));
+  });
+  return parent;
+}
+function chip(label, onClick) { const b = el('button', 'chip', label); b.type = 'button'; b.addEventListener('click', onClick); return b; }
+const ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+const ICON_DOT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4.5M12 16h.01"/></svg>';
+function source(text, sub, icon) {
+  const s = el('div', 'src'); s.innerHTML = icon || ICON_OK;
+  s.appendChild(el('span', null, text));
+  if (sub) s.appendChild(el('span', 't', sub));
+  return s;
+}
+function scrollDown() { log.scrollTo({ top: log.scrollHeight, behavior: reduce ? 'auto' : 'smooth' }); }
+
+function addUser(text) { lane.appendChild(el('div', 'msg user', text)); scrollDown(); }
+function addBot(kind, build) {
+  const m = el('article', 'msg bot' + (kind ? ' ' + kind : ''));
+  build(m); lane.appendChild(m); scrollDown(); return m;
+}
+
+/* ---------- renderers ---------- */
+function renderAnswer(entry) {
+  state.last = entry;
+  addBot('', m => {
+    const src = source('From Cipher Help', areaName(entry.area));
+    if (entry.fixed) src.appendChild(el('span', 'pill', 'Fixed'));
+    m.appendChild(src);
+    m.appendChild(rich(el('p', 'lead'), entry.lead));
+    if (entry.steps.length) {
+      const ol = el('ol'); entry.steps.forEach(s => ol.appendChild(rich(el('li'), s))); m.appendChild(ol);
+    }
+    if (entry.note) m.appendChild(rich(el('p', 'note'), entry.note));
+    const rel = (entry.rel || []).map(byId).filter(Boolean);
+    if (rel.length) {
+      const r = el('div', 'rel'); r.appendChild(el('span', null, 'Related:'));
+      rel.forEach(x => r.appendChild(chip(x.title, () => openEntry(x))));
+      m.appendChild(r);
+    }
+    const fb = el('div', 'fb'); fb.appendChild(el('span', null, 'Did that sort it out?'));
+    const yes = chip('Yes, thanks', () => { fb.remove(); botSay('Glad that worked. Ask again any time.'); });
+    const no = chip('Not yet', () => { fb.remove(); escalate(entry); });
+    fb.append(yes, no); m.appendChild(fb);
+  });
+}
+function botSay(text, kind, extra) {
+  addBot(kind || '', m => { m.appendChild(rich(el('p'), text)); if (extra) extra(m); });
+}
+function chipRow(items) {
+  const r = el('div', 'chips'); items.forEach(i => r.appendChild(i)); return r;
+}
+function suggestionChips(texts) { return chipRow(texts.map(t => chip(t, () => ask(t)))); }
+const EXAMPLES = ['My call is stuck on Calling', 'How do I turn on notifications', 'Someone is bothering me', 'I forgot my passphrase'];
+function reportButton(label, prefill) { const b = el('button', 'btn primary', label); b.type = 'button'; b.style.alignSelf = 'flex-start'; b.addEventListener('click', () => openReport(prefill)); return b; }
+function openEntry(entry) { addUser(entry.title); state.transcript.push('Opened topic: ' + entry.title); think(() => renderAnswer(entry)); }
+
+function escalate(entry) {
+  addBot('warn', m => {
+    m.appendChild(source('Next step', null, ICON_DOT));
+    m.appendChild(el('p', null, "Sorry that didn't solve it. Let's get it to the Cipher team. I'll fill in the report with what we've covered (" + entry.title + ')'));
+    m.appendChild(reportButton('Report this problem', { entry }));
+  });
+}
+
+function render(r, text) {
+  switch (r.kind) {
+    case 'answer': return renderAnswer(r.entry);
+    case 'choose':
+      return addBot('', m => {
+        m.appendChild(source('A few topics could fit', null, ICON_DOT));
+        m.appendChild(el('p', null, 'Which one is closest to what you need?'));
+        m.appendChild(chipRow(r.options.map(o => chip(o.title, () => openEntry(o)))));
+      });
+    case 'unknown':
+      return addBot('warn', m => {
+        m.appendChild(source('No verified answer', null, ICON_DOT));
+        m.appendChild(el('p', null, "I don't have a verified answer for that in Cipher Help, and I won't guess. If it's a problem you're having, a report puts it in front of the Cipher team."));
+        if (r.near && r.near.length) { m.appendChild(el('p', 'note', 'Closest topics:')); m.appendChild(chipRow(r.near.map(o => chip(o.title, () => openEntry(o))))); }
+        m.appendChild(reportButton('Report this problem', { text }));
+      });
+    case 'off':
+      return addBot('neutral', m => {
+        m.appendChild(source('Outside Cipher Support', null, ICON_DOT));
+        m.appendChild(el('p', null, "That's outside what I can help with. I'm Cipher Support, so I only answer questions about using Cipher: accounts, messages, calls, groups, notifications and the apps inside it."));
+        m.appendChild(el('p', 'note', 'You could ask something like:'));
+        m.appendChild(suggestionChips(EXAMPLES));
+      });
+    case 'guard':
+      return addBot('neutral', m => {
+        m.appendChild(source("Can't help with that", null, ICON_DOT));
+        if (r.why === 'role') {
+          m.appendChild(el('p', null, "I'm Cipher Support and I stay in that role. I can't change my rules or share how I'm set up, but I'm glad to help with anything in Cipher."));
+          m.appendChild(suggestionChips(EXAMPLES));
+        } else {
+          m.appendChild(el('p', null, "I can't help with getting into someone else's account, messages or location. If you think someone is doing that to you, these topics can help:"));
+          m.appendChild(chipRow(['scam', 'block-report'].map(id => chip(byId(id).title, () => openEntry(byId(id))))));
+        }
+      });
+    case 'crisis':
+      return addBot('care', m => {
+        m.appendChild(source('Help for you right now', null, ICON_DOT));
+        m.appendChild(el('p', 'lead', "I'm really sorry you're feeling this way. You deserve support from a real person right now, and this isn't something I can help with."));
+        const lines = el('div', 'lines');
+        [['If you are in immediate danger, call **000**.'], ['**Lifeline**, any time: **13 11 14**'], ['**Kids Helpline** (ages 5 to 25), any time: **1800 55 1800**']].forEach(x => lines.appendChild(rich(el('div', 'l'), x[0])));
+        m.appendChild(lines);
+        m.appendChild(el('p', 'note', "Please also tell a trusted adult, a teacher or a friend how you're feeling. If you're outside Australia, contact your local emergency number."));
+      });
+    case 'greet': return botSay("Hi! I can help with using Cipher: accounts, chats, calls, groups, notifications and the apps inside it. What's going on?", '', m => m.appendChild(suggestionChips(EXAMPLES)));
+    case 'thanks': return botSay("You're welcome. Ask again any time.");
+    case 'bye': return botSay('Bye! Come back if anything in Cipher acts up.');
+    case 'ack': return botSay("Okay. Ask me anything about Cipher when you're ready.");
+    case 'vague': return botSay('Happy to help. Describe what\'s going wrong in a sentence (for example, "calls won\'t connect"), or pick one:', '', m => m.appendChild(suggestionChips(EXAMPLES)));
+    case 'who':
+      return botSay("I'm Cipher Support, an automated helper. I answer only from Cipher's verified help library, so I don't guess or make things up. I can't see your account, messages or settings, and I can't change anything for you. For anything I can't answer, I can prepare a report for the Cipher team.", '', m => m.appendChild(reportButton('Report an issue', {})));
+    case 'human':
+      return botSay("I can't connect you to a live person from here. What I can do is prepare a report with everything the Cipher team needs, which is the fastest way to get a human to look at it.", '', m => m.appendChild(reportButton('Report an issue', {})));
+    case 'report-offer':
+      return botSay("Thanks for flagging it. The report form takes about a minute, and I'll attach the details for you.", '', m => m.appendChild(reportButton('Report an issue', {})));
+    case 'escalate': return escalate(r.entry);
+  }
+}
+
+/* ---------- ask flow ---------- */
+function think(fn) {
+  const t = el('div', 'typing'); t.setAttribute('aria-hidden', 'true'); t.append(el('i'), el('i'), el('i'));
+  lane.appendChild(t); scrollDown();
+  setTimeout(() => { t.remove(); fn(); }, reduce ? 0 : 380);
+}
+const flatAI = a => [a.lead, ...(a.steps || []), a.note].filter(Boolean).join(' ').replace(/\*\*/g, '').slice(0, 700);
+async function askAI(text) {
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 28000);
+  try {
+    const res = await fetch(CONFIG.aiEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal, body: JSON.stringify({ messages: [...state.history.slice(-8), { role: 'user', text }] }) });
+    if (!res.ok) throw new Error('AI ' + res.status);
+    const a = await res.json(); if (!a || !a.lead) throw new Error('AI empty'); return a;
+  } finally { clearTimeout(timer); }
+}
+function renderAI(a, text) {
+  state.history.push({ role: 'user', text }, { role: 'model', text: flatAI(a) });
+  const topics = (a.topic_ids || []).map(byId).filter(Boolean), first = topics[0];
+  if (a.kind === 'answer' && first) state.last = first;
+  const LABEL = { answer: 'From Cipher Help', needs_info: 'Quick question', no_answer: 'No verified answer', off_topic: 'Outside Cipher Support', safety: 'Help for you right now', chat: 'Cipher Support' };
+  const cls = { no_answer: 'warn', safety: 'care', off_topic: 'neutral' }[a.kind] || '';
+  addBot(cls, m => {
+    m.appendChild(source(LABEL[a.kind] || 'Cipher Support', a.kind === 'answer' && first ? areaName(first.area) : null, a.kind === 'answer' ? ICON_OK : ICON_DOT));
+    m.appendChild(rich(el('p', 'lead'), a.lead));
+    if (a.steps && a.steps.length) { const ol = el('ol'); a.steps.forEach(x => ol.appendChild(rich(el('li'), x))); m.appendChild(ol); }
+    if (a.note) m.appendChild(rich(el('p', 'note'), a.note));
+    if (topics.length && a.kind !== 'safety') {
+      const r = el('div', 'rel'); r.appendChild(el('span', null, 'Related:'));
+      topics.forEach(x => r.appendChild(chip(x.title, () => openEntry(x)))); m.appendChild(r);
+    }
+    if (a.offer_report) m.appendChild(reportButton('Report this problem', { text, entry: first }));
+    else if (a.kind === 'answer') {
+      const fb = el('div', 'fb'); fb.appendChild(el('span', null, 'Did that sort it out?'));
+      fb.append(chip('Yes, thanks', () => { fb.remove(); botSay('Glad that worked. Ask again any time.'); }), chip('Not yet', () => { fb.remove(); first ? escalate(first) : botSay("Sorry that didn't solve it. Let's get it to the Cipher team.", '', x => x.appendChild(reportButton('Report this problem', { text }))); }));
+      m.appendChild(fb);
+    }
+  });
+}
+async function ask(raw) {
+  const text = String(raw || '').trim().slice(0, 500);
+  if (!text || state.busy) return;
+  state.busy = true; setView('ask');
+  addUser(text); state.transcript.push('Asked: ' + text); state.lastQuestion = text;
+  const r = respond(text, { last: state.last });
+  if (r.kind === 'crisis' || r.kind === 'guard') { think(() => { render(r, text); state.busy = false; }); return; }  // safety replies never wait on the network
+  const t = el('div', 'typing'); t.setAttribute('aria-hidden', 'true'); t.append(el('i'), el('i'), el('i')); lane.appendChild(t); scrollDown();
+  try { const a = await askAI(text); t.remove(); renderAI(a, text); }
+  catch (err) {
+    console.warn('Cipher Support AI unavailable, using saved help library:', err); t.remove(); render(r, text);
+    const last = lane.lastElementChild; if (last && last.classList.contains('msg')) last.appendChild(el('p', 'note', 'The AI helper is unavailable right now, so this answer comes from the saved help library.'));
+  }
+  state.busy = false;
+}
+
+/* ---------- composer ---------- */
+const input = $('#input'), send = $('#send');
+function sync() { send.disabled = !input.value.trim(); input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 130) + 'px'; }
+input.addEventListener('input', sync);
+input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#composer').requestSubmit(); } });
+$('#composer').addEventListener('submit', e => { e.preventDefault(); const v = input.value; input.value = ''; sync(); ask(v); });
+
+/* ---------- start chips + topic browser ---------- */
+const STARTS = ['My call is stuck on Calling', 'How do I turn on notifications', 'I forgot my passphrase', "I can't sign in to Instagram in Cipher Browser", 'Someone is bothering me'];
+STARTS.forEach((t, i) => { const c = chip(t, () => ask(t)); c.style.setProperty('--i', i); $('#startChips').appendChild(c); });
+
+const list = $('#topicList');
+const groups = AREAS.map(([id, name], gi) => {
+  const d = el('details', 'group'); if (gi < 2) d.open = true;
+  const s = el('summary', null, name); d.appendChild(s);
+  const ul = el('ul');
+  const items = KB.filter(e => e.area === id).map(e => {
+    const li = el('li'); const b = el('button', 'topic'); b.type = 'button'; b.appendChild(el('span', null, e.title));
+    if (e.fixed) b.appendChild(el('span', 'pill', 'Fixed'));
+    b.addEventListener('click', () => openEntry(e));
+    li.appendChild(b); ul.appendChild(li);
+    return { li, hay: norm(e.title + ' ' + e.kw.join(' ')) };
+  });
+  d.appendChild(ul); list.appendChild(d);
+  return { d, items, wasOpen: d.open };
+});
+const none = el('p', 'none', 'No topics match. Ask me in the chat instead.'); none.hidden = true; list.appendChild(none);
+$('#topicSearch').addEventListener('input', e => {
+  const q = norm(e.target.value); let any = false;
+  groups.forEach(g => {
+    let n = 0;
+    g.items.forEach(i => { const show = !q || q.split(' ').every(w => i.hay.includes(w)); i.li.hidden = !show; if (show) n++; });
+    g.d.hidden = n === 0; if (n) any = true;
+    if (q) g.d.open = n > 0; else g.d.open = g.wasOpen;
+  });
+  none.hidden = any;
+});
+
+/* ---------- views (mobile tabs) ---------- */
+function setView(v) {
+  document.body.dataset.view = v;
+  $('#tabAsk').setAttribute('aria-selected', v === 'ask');
+  $('#tabTopics').setAttribute('aria-selected', v === 'topics');
+}
+$('#tabAsk').onclick = () => setView('ask');
+$('#tabTopics').onclick = () => setView('topics');
+$('#tabReport').onclick = () => openReport({});
+
+/* ---------- theme ---------- */
+const root = document.documentElement;
+try { const t = localStorage.getItem('cipher-support-theme'); if (t) root.dataset.theme = t; } catch (_) {}
+$('#themeBtn').onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('cipher-support-theme', root.dataset.theme); } catch (_) {}
+};
+
+/* ---------- report ---------- */
+const sheet = $('#sheet'), form = $('#reportForm'), status = $('#rStatus');
+const CAT = { call: 'Calls and screen sharing', msg: 'Messages, files and voice messages', acct: 'Account and sign-in', grp: 'Groups and channels', app: 'Notifications and apps', ext: 'Cipher Music, Games, AI or Dashboard', safe: 'Security concern', fix: 'Something else' };
+const CAT_BY_ID = { 'browser-social': 'Cipher Browser', 'browser-code': 'Cipher Browser', 'call-stuck': CAT.call, 'call-network': CAT.call, 'group-call-bug': CAT.call, 'send-fail': CAT.msg, 'desktop-popups': CAT.app, 'browser-blank': CAT.app, 'server-down': CAT.app, 'scam': CAT.safe };
+
+function device() {
+  let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (_) {}
+  return [
+    'Browser: ' + navigator.userAgent,
+    'Screen: ' + screen.width + 'x' + screen.height + ', window ' + innerWidth + 'x' + innerHeight,
+    'Language: ' + navigator.language,
+    'Time zone: ' + tz,
+    'Online: ' + (navigator.onLine ? 'yes' : 'no'),
+    'Theme: ' + (root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+  ].join('\n');
+}
+function openReport(pre) {
+  pre = pre || {};
+  status.textContent = ''; status.classList.remove('err');
+  const entry = pre.entry || state.last;
+  if (entry && !$('#rCat').value) $('#rCat').value = CAT_BY_ID[entry.id] || CAT[entry.area] || '';
+  if (pre.text && !$('#rWhat').value) $('#rWhat').value = pre.text.length > 1 ? pre.text : '';
+  if (!pre.text && pre.entry && !$('#rWhat').value) $('#rWhat').value = 'Topic: ' + pre.entry.title + '\nIt still happens after following the help steps.';
+  $('#devPreview').textContent = device();
+  const hasConfig = CONFIG.reportEndpoint || CONFIG.reportEmail;
+  $('#rSend').hidden = !hasConfig;
+  $('#rCopy').className = hasConfig ? 'btn' : 'btn primary';
+  if (!sheet.open) sheet.showModal();
+  setTimeout(() => $('#rWhat').focus(), 50);
+}
+function buildReport() {
+  const id = 'CS-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  const v = i => $(i).value.trim();
+  const flat = t => t.replace(/\s*\n\s*/g, ' ').trim();
+  const end = t => /[.!?…"”)]$/.test(t) ? t : t + '.';
+  const WHERE = { 'Computer browser': 'a computer browser', 'Windows app': 'the Windows app', 'Phone browser': 'a phone browser', 'Phone home-screen app': 'the phone home-screen app', 'Tablet': 'a tablet', 'Not sure': 'a device I am not sure how to describe' };
+  const FREQ = { 'Every time': 'It happens every time I try.', 'Sometimes': 'It only happens some of the time.', 'Only once': 'So far it has only happened once.' };
+  const cat = v('#rCat'), user = v('#rUser'), what = flat(v('#rWhat')) || 'No description was given.', steps = flat(v('#rSteps')), msg = v('#rMsg');
+  const area = !cat || cat === 'Something else' ? 'a problem that does not fit one of your categories' : 'a problem in the \u201c' + cat + '\u201d area';
+  const p = ['Hello Cipher team,'];
+  p.push('I am writing to report ' + area + '. I am using Cipher on ' + (WHERE[v('#rWhere')] || 'my device') + (user ? ', and my username is ' + user : '') + '.');
+  p.push('Here is what happened: ' + end(what) + (msg ? ' The message on screen said \u201c' + msg + '\u201d.' : '') + ' ' + (FREQ[form.freq.value] || ''));
+  if (steps) p.push('Just before it happened, I did the following: ' + end(steps));
+  if ($('#rChat').checked && state.transcript.length) {
+    const bits = state.transcript.map(t => t.startsWith('Asked: ') ? 'asked \u201c' + t.slice(7) + '\u201d' : t.startsWith('Opened topic: ') ? 'opened the help topic \u201c' + t.slice(14) + '\u201d' : t);
+    p.push('Before writing to you, I tried Cipher Support. In that chat I ' + bits.join(', then ') + '.');
+  }
+  if ($('#rDev').checked) p.push('In case it helps, here are my device details: ' + device().split('\n').join('; ') + '.');
+  p.push('Thank you for looking into this.');
+  p.push('Reference: ' + id + '\nSent: ' + new Date().toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'short' }));
+  return { id, text: p.join('\n\n') };
+}
+function say(msg, err) { status.textContent = msg; status.classList.toggle('err', !!err); }
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (_) {
+    const ta = el('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (_) {} ta.remove(); return ok;
+  }
+}
+function valid() { if (!form.reportValidity()) return false; return true; }
+$('#rCopy').onclick = async () => { if (!valid()) return; const r = buildReport(); say((await copyText(r.text)) ? 'Report copied. Reference ' + r.id + '. Paste it into an email to the Cipher team.' : 'Could not copy. Use Download instead.', false); };
+$('#rDownload').onclick = () => {
+  if (!valid()) return; const r = buildReport();
+  const a = el('a'); a.href = URL.createObjectURL(new Blob([r.text], { type: 'text/plain' })); a.download = r.id + '.txt'; document.body.appendChild(a); a.click(); a.remove();
+  say('Saved ' + r.id + '.txt. Send it to the Cipher team.');
+};
+form.addEventListener('submit', async e => {
+  e.preventDefault(); if (!valid()) return;
+  const r = buildReport(); const btn = $('#rSend'); btn.disabled = true; say('Sending…');
+  try {
+    if (CONFIG.reportEndpoint) {
+      const res = await fetch(CONFIG.reportEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: r.id, report: r.text, category: $('#rCat').value }) });
+      if (!res.ok) throw new Error('bad status');
+      say('Thank you. Your report was sent to the Cipher team. Reference ' + r.id + '.');
+    } else if (CONFIG.reportEmail) {
+      const MAX = 1900, long = r.text.length > MAX;
+      if (long) await copyText(r.text);
+      const body = long ? r.text.slice(0, MAX).replace(/\s+\S*$/, '') + '\u2026\n\n(This report was long, so it was shortened here. The full text is on my clipboard.)' : r.text;
+      location.href = 'mailto:' + CONFIG.reportEmail + '?subject=' + encodeURIComponent('Cipher Support report ' + r.id) + '&body=' + encodeURIComponent(body);
+      say('Your email app should open with the report. Reference ' + r.id + '.');
+    }
+  } catch (_) {
+    await copyText(r.text);
+    say("Couldn't send it. The report is copied, so please send it to the Cipher team. Reference " + r.id + '.', true);
+  } finally { btn.disabled = false; }
+});
+$('#sheetClose').onclick = () => sheet.close();
+sheet.addEventListener('click', e => { if (e.target === sheet) sheet.close(); });
+$('#reportTop').onclick = () => openReport({});
+$('.brand').addEventListener('click', e => { e.preventDefault(); setView('ask'); log.scrollTo({ top: 0 }); });
+})();
+</script>
+</body>
+</html>
